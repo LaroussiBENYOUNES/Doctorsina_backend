@@ -3,46 +3,28 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use Laraveldaily\Quickadmin\Observers\UserActionsObserver;
 
-
-use Illuminate\Database\Eloquent\SoftDeletes;
-
-class Prescription extends Model {
-
-    use SoftDeletes;
-
+class Prescription extends Model
+{
     /**
-    * The attributes that should be mutated to dates.
-    *
-    * @var array
-    */
-    protected $dates = ['deleted_at'];
-
-    protected $table    = 'prescription';
-    
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
     protected $fillable = [
-          'consultation_id',
-          'label',
-          'description',
-          'activated'
+        'doctor_id','patient_id','blood_pressure','diabetes','symptoms','diagnosis','advice','date'
     ];
-    
 
-    public static function boot()
-    {
-        parent::boot();
-
-        Prescription::observe(new UserActionsObserver);
-    }
-    
-    public function consultation()
-    {
-        return $this->hasOne('App\Consultation', 'id', 'consultation_id');
+    public function doctor(){
+        return $this->belongsTo(User::class);
     }
 
+    public function patient(){
+        return $this->belongsTo(User::class);
+    }
 
-    
-    
-    
+    public function medicines(){
+        return $this->belongsToMany(Medicine::class)->withPivot('instructions');
+    }
+
 }

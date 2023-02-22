@@ -47,7 +47,7 @@ class FileProfilerStorage implements ProfilerStorageInterface
     /**
      * {@inheritdoc}
      */
-    public function find($ip, $url, $limit, $method, $start = null, $end = null, $statusCode = null): array
+    public function find(?string $ip, ?string $url, ?int $limit, ?string $method, int $start = null, int $end = null, string $statusCode = null): array
     {
         $file = $this->getIndexFilename();
 
@@ -113,9 +113,17 @@ class FileProfilerStorage implements ProfilerStorageInterface
     /**
      * {@inheritdoc}
      */
-    public function read($token): ?Profile
+    public function read(string $token): ?Profile
     {
-        return $this->doRead($token);
+        if (!$token || !file_exists($file = $this->getFilename($token))) {
+            return null;
+        }
+
+        if (\function_exists('gzcompress')) {
+            $file = 'compress.zlib://'.$file;
+        }
+
+        return $this->createProfileFromData($token, unserialize(file_get_contents($file)));
     }
 
     /**
@@ -157,13 +165,14 @@ class FileProfilerStorage implements ProfilerStorageInterface
             'status_code' => $profile->getStatusCode(),
         ];
 
-        $data = serialize($data);
+        $context = stream_context_create();
 
-        if (\function_exists('gzencode')) {
-            $data = gzencode($data, 3);
+        if (\function_exists('gzcompress')) {
+            $file = 'compress.zlib://'.$file;
+            stream_context_set_option($context, 'zlib', 'level', 3);
         }
 
-        if (false === file_put_contents($file, $data, \LOCK_EX)) {
+        if (false === file_put_contents($file, serialize($data), 0, $context)) {
             return false;
         }
 
@@ -191,11 +200,9 @@ class FileProfilerStorage implements ProfilerStorageInterface
     /**
      * Gets filename to store data, associated to the token.
      *
-     * @param string $token
-     *
      * @return string The profile filename
      */
-    protected function getFilename($token)
+    protected function getFilename(string $token)
     {
         // Uses 4 last characters, because first are mostly the same.
         $folderA = substr($token, -2, 2);
@@ -261,7 +268,7 @@ class FileProfilerStorage implements ProfilerStorageInterface
         return '' === $line ? null : $line;
     }
 
-    protected function createProfileFromData($token, $data, $parent = null)
+    protected function createProfileFromData(string $token, array $data, Profile $parent = null)
     {
         $profile = new Profile($token);
         $profile->setIp($data['ip']);
@@ -280,34 +287,17 @@ class FileProfilerStorage implements ProfilerStorageInterface
         }
 
         foreach ($data['children'] as $token) {
-            if (null !== $childProfile = $this->doRead($token, $profile)) {
-                $profile->addChild($childProfile);
+            if (!$token || !file_exists($file = $this->getFilename($token))) {
+                continue;
             }
+
+            if (\function_exists('gzcompress')) {
+                $file = 'compress.zlib://'.$file;
+            }
+
+            $profile->addChild($this->createProfileFromData($token, unserialize(file_get_contents($file)), $profile));
         }
 
         return $profile;
-    }
-
-    private function doRead($token, Profile $profile = null): ?Profile
-    {
-        if (!$token || !file_exists($file = $this->getFilename($token))) {
-            return null;
-        }
-
-        $h = fopen($file, 'r');
-        flock($h, \LOCK_SH);
-        $data = stream_get_contents($h);
-        flock($h, \LOCK_UN);
-        fclose($h);
-
-        if (\function_exists('gzdecode')) {
-            $data = @gzdecode($data) ?: $data;
-        }
-
-        if (!$data = unserialize($data)) {
-            return null;
-        }
-
-        return $this->createProfileFromData($token, $data, $profile);
     }
 }

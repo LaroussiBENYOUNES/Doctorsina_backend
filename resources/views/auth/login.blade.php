@@ -1,17 +1,8 @@
 @extends('layouts.app')
-
-
-<!--Header-->
-@include("layouts.exeption_template.header")
-<!-- /header -->
-
-<body>
-
 @section('content')
-
 <div class="sidenav">
          <div class="login-main-text">
-         <a href="/"><img alt="" width="" src="images/DoctorSinaLogoSmallWhite.png"></a>
+         <a href="/"><img alt="" src="{{ URL::to('/') }}/DoctorSinaLogoTextWhite.png" width="300px"></a>
          <hr><br>
             <h2>Application<br> Login Page</h2>
             <p>Login or register from here to access.</p>

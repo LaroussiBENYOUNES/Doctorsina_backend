@@ -39,7 +39,7 @@ class ProcessUtils
      *
      * @throws InvalidArgumentException In case the input is not valid
      */
-    public static function validateInput($caller, $input)
+    public static function validateInput(string $caller, $input)
     {
         if (null !== $input) {
             if (\is_resource($input)) {
@@ -48,7 +48,7 @@ class ProcessUtils
             if (\is_string($input)) {
                 return $input;
             }
-            if (\is_scalar($input)) {
+            if (is_scalar($input)) {
                 return (string) $input;
             }
             if ($input instanceof Process) {

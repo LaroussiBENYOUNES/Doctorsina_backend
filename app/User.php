@@ -2,66 +2,128 @@
 
 namespace App;
 
-use Illuminate\Auth\Authenticatable;
-use Illuminate\Auth\Passwords\CanResetPassword;
-use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
-use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
-use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Foundation\Auth\Access\Authorizable;
-use App\Role;
-use Laraveldaily\Quickadmin\Observers\UserActionsObserver;
-use Laraveldaily\Quickadmin\Traits\AdminPermissionsTrait;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
-class User extends Model implements AuthenticatableContract,
-    AuthorizableContract,
-    CanResetPasswordContract
+class User extends Authenticatable
 {
-    use Authenticatable, Authorizable, CanResetPassword, AdminPermissionsTrait;
-
-    /**
-     * The database table used by the model.
-     *
-     * @var string
-     */
-    protected $table = 'users';
+    use Notifiable;
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $fillable = ['name', 'email', 'password', 'birthday', 'gender', 'country', 'phone', 'role_id','remember_token', 'confirmed'];
+    protected $fillable = [
+        'first_name','last_name','email', 'password','national_id','address','picture','birth_date','gender','phone','mobile','emergency','type','medical_degree','specialist','biography','educational_qualification','blood_group'
+    ];
 
     /**
-     * The attributes excluded from the model's JSON form.
+     * The attributes that should be hidden for arrays.
      *
      * @var array
      */
-    protected $hidden = ['password', 'remember_token'];
+    protected $hidden = [
+        'password', 'remember_token',
+    ];
 
-    public static function boot()
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+    ];
+
+    // Scopes
+    public function scopeEmployee($query)
     {
-        parent::boot();
-
-        User::observe(new UserActionsObserver);
+        return $query->whereType('admin')->whereType('doctor')->whereType('patient');
     }
 
-    public function role()
+    public function scopeAdmin($query)
     {
-        return $this->belongsTo(Role::class);
+        return $query->whereType('admin');
     }
 
-    public function doctor(){
-        return $this->hasMany(Doctor::class);
+    public function scopeDoctor($query)
+    {
+        return $query->whereType('doctor');
     }
 
-    public function patient(){
-        return $this->hasMany(Patient::class);
+    public function scopePatient($query)
+    {
+        return $query->whereType('patient');
     }
 
-    public function appoitement(){
-        return $this->hasMany(Appoitement::class);
+    public function scopeNurse($query)
+    {
+        return $query->whereType('nurse');
     }
 
+    public function scopeAccountant($query)
+    {
+        return $query->whereType('accountant');
+    }
+
+    public function scopePharmacist($query)
+    {
+        return $query->whereType('pharmacist');
+    }
+
+    public function scopeLaboratorist($query)
+    {
+        return $query->whereType('laboratorist');
+    }
+
+    public function scopeReceptionist($query)
+    {
+        return $query->whereType('receptionist');
+    }
+
+
+    // Relation Ships
+    // Global Relations
+    public function departments(){
+        return $this->belongsToMany(Department::class);
+    }
+
+    public function timeSchedules(){
+        return $this->hasMany(TimeSchedule::class);
+    }
+
+    public function dayoffSchedules(){
+        return $this->hasMany(DayoffSchedule::class);
+    }
+    // Doctor & Patient Relations
+    public function prescriptions(){
+        return $this->hasMany(Prescription::class);
+    }
+
+    public function appointments(){
+        return $this->hasMany(Appointment::class);
+    }
+
+    public function payments(){
+        return $this->hasMany(Payment::class);
+    }
+    // Patient Relations
+    public function casesHistories(){
+        return $this->hasMany(CaseHistory::class);
+    }
+
+    public function documents(){
+        return $this->hasMany(Document::class);
+    }
+
+    public function bedAllotments(){
+        return $this->hasMany(BedAllotment::class);
+    }
+
+    // Short Cuts
+    public function hasDepartment($departmentId){
+        return in_array($departmentId,$this->departments->pluck('id')->toArray());
+    }
 }

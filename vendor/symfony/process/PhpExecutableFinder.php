@@ -29,11 +29,9 @@ class PhpExecutableFinder
     /**
      * Finds The PHP executable.
      *
-     * @param bool $includeArgs Whether or not include command arguments
-     *
      * @return string|false The PHP executable path or false if it cannot be found
      */
-    public function find($includeArgs = true)
+    public function find(bool $includeArgs = true)
     {
         if ($php = getenv('PHP_BINARY')) {
             if (!is_executable($php)) {
@@ -45,10 +43,6 @@ class PhpExecutableFinder
                 } else {
                     return false;
                 }
-            }
-
-            if (@is_dir($php)) {
-                return false;
             }
 
             return $php;
@@ -63,7 +57,7 @@ class PhpExecutableFinder
         }
 
         if ($php = getenv('PHP_PATH')) {
-            if (!@is_executable($php) || @is_dir($php)) {
+            if (!@is_executable($php)) {
                 return false;
             }
 
@@ -71,12 +65,12 @@ class PhpExecutableFinder
         }
 
         if ($php = getenv('PHP_PEAR_PHP_BIN')) {
-            if (@is_executable($php) && !@is_dir($php)) {
+            if (@is_executable($php)) {
                 return $php;
             }
         }
 
-        if (@is_executable($php = \PHP_BINDIR.('\\' === \DIRECTORY_SEPARATOR ? '\\php.exe' : '/php')) && !@is_dir($php)) {
+        if (@is_executable($php = \PHP_BINDIR.('\\' === \DIRECTORY_SEPARATOR ? '\\php.exe' : '/php'))) {
             return $php;
         }
 

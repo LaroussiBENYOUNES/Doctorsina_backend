@@ -3,54 +3,27 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use Laraveldaily\Quickadmin\Observers\UserActionsObserver;
 
-
-use Illuminate\Database\Eloquent\SoftDeletes;
-
-class Service extends Model {
-
-    use SoftDeletes;
-
+class Service extends Model
+{
     /**
-    * The attributes that should be mutated to dates.
-    *
-    * @var array
-    */
-    protected $dates = ['deleted_at'];
-
-    protected $table    = 'service';
-    
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
     protected $fillable = [
-          'site_id',
-          'schedule_id',
-          'label',
-          'alias',
-          'description',
-          'activated'
+        'department_id','name','charge','doctor_commission'
     ];
-    
 
-    public static function boot()
-    {
-        parent::boot();
-
-        Service::observe(new UserActionsObserver);
-    }
-    
-    public function site()
-    {
-        return $this->hasOne('App\Site', 'id', 'site_id');
+    public function department(){
+        return $this->belongsTo(Department::class);
     }
 
-
-    public function schedule()
-    {
-        return $this->hasOne('App\Schedule', 'id', 'schedule_id');
+    public function patients(){
+        return $this->belongsToMany(User::class);
     }
 
-
-    
-    
-    
+    public function servicePackages(){
+        return $this->belongsToMany(ServicePackage::class);
+    }
 }

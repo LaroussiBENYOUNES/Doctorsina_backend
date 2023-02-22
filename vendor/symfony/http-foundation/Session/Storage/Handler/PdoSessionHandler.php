@@ -305,7 +305,7 @@ class PdoSessionHandler extends AbstractSessionHandler
     /**
      * {@inheritdoc}
      */
-    protected function doDestroy($sessionId)
+    protected function doDestroy(string $sessionId)
     {
         // delete the record associated with this id
         $sql = "DELETE FROM $this->table WHERE $this->idCol = :id";
@@ -326,9 +326,9 @@ class PdoSessionHandler extends AbstractSessionHandler
     /**
      * {@inheritdoc}
      */
-    protected function doWrite($sessionId, $data)
+    protected function doWrite(string $sessionId, string $data)
     {
-        $maxlifetime = (int) \ini_get('session.gc_maxlifetime');
+        $maxlifetime = (int) ini_get('session.gc_maxlifetime');
 
         try {
             // We use a single MERGE SQL query when supported by the database.
@@ -375,7 +375,7 @@ class PdoSessionHandler extends AbstractSessionHandler
     #[\ReturnTypeWillChange]
     public function updateTimestamp($sessionId, $data)
     {
-        $expiry = time() + (int) \ini_get('session.gc_maxlifetime');
+        $expiry = time() + (int) ini_get('session.gc_maxlifetime');
 
         try {
             $updateStmt = $this->pdo->prepare(
@@ -491,10 +491,32 @@ class PdoSessionHandler extends AbstractSessionHandler
             $driver = substr($driver, 4);
         }
 
+        $dsn = null;
         switch ($driver) {
             case 'mysql':
+                $dsn = 'mysql:';
+                if ('' !== ($params['query'] ?? '')) {
+                    $queryParams = [];
+                    parse_str($params['query'], $queryParams);
+                    if ('' !== ($queryParams['charset'] ?? '')) {
+                        $dsn .= 'charset='.$queryParams['charset'].';';
+                    }
+
+                    if ('' !== ($queryParams['unix_socket'] ?? '')) {
+                        $dsn .= 'unix_socket='.$queryParams['unix_socket'].';';
+
+                        if (isset($params['path'])) {
+                            $dbName = substr($params['path'], 1); // Remove the leading slash
+                            $dsn .= 'dbname='.$dbName.';';
+                        }
+
+                        return $dsn;
+                    }
+                }
+            // If "unix_socket" is not in the query, we continue with the same process as pgsql
+            // no break
             case 'pgsql':
-                $dsn = $driver.':';
+                $dsn ?? $dsn = 'pgsql:';
 
                 if (isset($params['host']) && '' !== $params['host']) {
                     $dsn .= 'host='.$params['host'].';';
@@ -611,11 +633,9 @@ class PdoSessionHandler extends AbstractSessionHandler
      * We need to make sure we do not return session data that is already considered garbage according
      * to the session.gc_maxlifetime setting because gc() is called after read() and only sometimes.
      *
-     * @param string $sessionId Session ID
-     *
-     * @return string The session data
+     * @return string
      */
-    protected function doRead($sessionId)
+    protected function doRead(string $sessionId)
     {
         if (self::LOCK_ADVISORY === $this->lockMode) {
             $this->unlockStatements[] = $this->doAdvisoryLock($sessionId);
@@ -626,7 +646,7 @@ class PdoSessionHandler extends AbstractSessionHandler
         $selectStmt->bindParam(':id', $sessionId, \PDO::PARAM_STR);
         $insertStmt = null;
 
-        while (true) {
+        do {
             $selectStmt->execute();
             $sessionRows = $selectStmt->fetchAll(\PDO::FETCH_NUM);
 
@@ -650,7 +670,7 @@ class PdoSessionHandler extends AbstractSessionHandler
                 throw new \RuntimeException('Failed to read session: INSERT reported a duplicate id but next SELECT did not return any data.');
             }
 
-            if (!filter_var(\ini_get('session.use_strict_mode'), \FILTER_VALIDATE_BOOLEAN) && self::LOCK_TRANSACTIONAL === $this->lockMode && 'sqlite' !== $this->driver) {
+            if (!filter_var(ini_get('session.use_strict_mode'), \FILTER_VALIDATE_BOOLEAN) && self::LOCK_TRANSACTIONAL === $this->lockMode && 'sqlite' !== $this->driver) {
                 // In strict mode, session fixation is not possible: new sessions always start with a unique
                 // random id, so that concurrency is not possible and this code path can be skipped.
                 // Exclusive-reading of non-existent rows does not block, so we need to do an insert to block
@@ -675,7 +695,7 @@ class PdoSessionHandler extends AbstractSessionHandler
             }
 
             return '';
-        }
+        } while (true);
     }
 
     /**
@@ -898,7 +918,7 @@ class PdoSessionHandler extends AbstractSessionHandler
     protected function getConnection()
     {
         if (null === $this->pdo) {
-            $this->connect($this->dsn ?: \ini_get('session.save_path'));
+            $this->connect($this->dsn ?: ini_get('session.save_path'));
         }
 
         return $this->pdo;
