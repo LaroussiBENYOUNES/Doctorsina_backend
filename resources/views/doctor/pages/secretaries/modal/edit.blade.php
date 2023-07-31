@@ -1,11 +1,11 @@
-<form action="{{route('patient.edit',$patient->id)}}" method="post" enctype="multipart/form-data">
+<form action="{{route('secretary.edit',$secretary->id)}}" method="post" enctype="multipart/form-data">
     {{ csrf_field() }}
     @method('PUT')
-    <div class="modal fade text-left" id="ModalEdit{{$patient->id}}" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal fade text-left" id="ModalEdit{{$secretary->id}}" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">{{ __('edit Patient member') }}</h4>
+                    <h4 class="modal-title">{{ __('edit Secretary') }}</h4>
                     <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>                    
@@ -19,7 +19,7 @@
                             <label class="custom-file-label" for="picture">Choose file</label>
                         </div>
                         <div class="kt-avatar kt-avatar--outline kt-avatar--circle">
-                            <div class="kt-avatar__holder" style="background-image: url('{{ isset($patient) ? asset('storage/' . $patient->picture) : 'http://keenthemes.com/metronic/preview/default/custom/user/assets/media/users/300_20.jpg' }}')"></div>
+                            <div class="kt-avatar__holder" style="background-image: url('{{ isset($secretary) ? asset('storage/' . $secretary->picture) : 'http://keenthemes.com/metronic/preview/default/custom/user/assets/media/users/300_20.jpg' }}')"></div>
                             <label class="kt-avatar__upload" data-toggle="kt-tooltip" title="" data-original-title="Change avatar">
                                 <i class="fa fa-pen"></i>
                             </label>
@@ -32,38 +32,38 @@
                 <div class="col-xs-12 col-sm-12 col-md-12">
                         <div class="form-group">
                             <strong>{{ __('First Name') }}:</strong>
-                            <input type="text" class="form-control" placeholder="enter first name" name="first_name" value="{{$patient->first_name}}">
+                            <input type="text" class="form-control" placeholder="enter first name" name="first_name" value="{{$secretary->first_name}}">
                         </div>
                 </div>
                 <div class="col-xs-12 col-sm-12 col-md-12">
                         <div class="form-group">
                             <strong>{{ __('Last Name') }}:</strong>
-                            <input type="text" class="form-control" placeholder="enter last name" name="last_name" value="{{$patient->last_name}}">
+                            <input type="text" class="form-control" placeholder="enter last name" name="last_name" value="{{$secretary->last_name}}">
                         </div>
                 </div>
                 <div class="col-xs-12 col-sm-12 col-md-12">
                         <div class="form-group">
                             <strong>{{ __('National ID Number') }}:</strong>
-                            <input type="number" class="form-control" placeholder="enter national_id" name="national_id" value="{{$patient->national_id}}">
+                            <input type="number" class="form-control" placeholder="enter national_id" name="national_id" value="{{$secretary->national_id}}">
                         </div>
                 </div>
                 <div class="col-xs-12 col-sm-12 col-md-12">
                         <div class="form-group">
                             <strong>{{ __('Address') }}:</strong>
-                            <input type="text" class="form-control" name="address" value="{{$patient->address}}">
+                            <input type="text" class="form-control" name="address" value="{{$secretary->address}}">
                         </div>
                 </div>
               
                 <div class="col-xs-12 col-sm-12 col-md-12">
                         <div class="form-group">
                             <strong>{{ __('Email') }}:</strong>
-                            <input type="email" class="form-control" placeholder="enter your Email" name="email" value="{{$patient->email}}">
+                            <input type="email" class="form-control" placeholder="enter your Email" name="email" value="{{$secretary->email}}">
                         </div>
                 </div>
                 <div class="col-xs-12 col-sm-12 col-md-12">
                         <div class="form-group">
                             <strong>{{ __('Birth Date') }}:</strong>
-                            <input type="date" class="form-control" placeholder="" name="birth_date" value="{{$patient->birth_date}}">
+                            <input type="date" class="form-control" placeholder="" name="birth_date" value="{{$secretary->birth_date}}">
                         </div>
                 </div>
                  <div class="form-group">
@@ -73,57 +73,38 @@
                                         <select class="form-control" name="gender" id="gender">
                                             <option>Select Gender</option>
                                             <option
-                                                value="male" @if(isset($patient)) {{$patient->gender == 'male' ? 'selected' : ''}} @endif>
+                                                value="male" @if(isset($secretary)) {{$secretary->gender == 'male' ? 'selected' : ''}} @endif>
                                                 male
                                             </option>
                                             <option
-                                                value="female" @if(isset($patient)) {{$patient->gender == 'female' ? 'selected' : ''}} @endif>
+                                                value="female" @if(isset($secretary)) {{$secretary->gender == 'female' ? 'selected' : ''}} @endif>
                                                 female
                                             </option>
                                         </select>
                                     </div>
                                 </div>
-                 <div class="form-group">
+                                <div class="form-group">
                                     <label>LandLine Phone</label>
                                     <div class="input-group">
                                         <div class="input-group-prepend"><span class="input-group-text"><i class="fa fa-phone"></i></span></div>
-                                        <input id="phone" class="form-control" type="number" name="phone_number" value="{{$patient->phone_number}}">
+                                        <input id="phone" class="form-control" type="number" name="phone_number" value="{{$secretary->phone_number}}">
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label>Mobile Number</label>
                                     <div class="input-group">
                                         <div class="input-group-prepend"><span class="input-group-text"><i class="fa fa-mobile"></i></span></div>
-                                        <input id="mobile" class="form-control" type="number" name="mobile" value="{{$patient->mobile}}">
+                                        <input id="mobile" class="form-control" type="number" name="mobile" value="{{$secretary->mobile}}">
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label>Emergency Number</label>
                                     <div class="input-group">
                                         <div class="input-group-prepend"><span class="input-group-text"><i class="fa fa-h-square"></i></span></div>
-                                        <input id="emergency" class="form-control" type="number" name="emergency" value="{{$patient->emergency}}">
+                                        <input id="emergency" class="form-control" type="number" name="emergency" value="{{$secretary->emergency}}">
                                     </div>
                                 </div>
-                                <div class="form-group">
-                                    <label>Blood Group</label>
-                                    <div class="input-group">
-                                        <div class="input-group-prepend"><span class="input-group-text"><i class="fa fa-first-aid"></i></span></div>
-                                        <input id="blood_group" class="form-control" type="text" name="blood_group" value="{{$patient->blood_group}}">
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label>Departments</label>
-                                    <div class="input-group">
-                                        <div class="input-group-prepend"><span class="input-group-text"><i class="fa fa-h-square"></i></span></div>
-                                        <select id="kt_select2_3" class="kt-select2 form-control" name="departments[]" id="departments" multiple>
-                                            @foreach($departments as $department)
-                                                <option value="{{$department->id}}" @if(isset($patient)) {{$patient->hasDepartment($department->id) ? 'selected' : ''}} @endif>
-                                                    {{$department->name}}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
+
                     <div class="col-xs-12 col-sm-12 col-md-12">
                         <button type="button" class="btn grey btn-outline-secondary" data-bs-dismiss="modal">{{ __('Back') }}</button>
                         <button type="submit" class="btn btn-success">{{ __('Save') }}</button>

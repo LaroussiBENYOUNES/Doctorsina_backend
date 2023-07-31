@@ -23,7 +23,7 @@
                                 <th>Name</th>
                                 <th>National ID</th>
                                 <th>Email</th>
-                                <th>Mobile Num</th>
+                                <th>Phone Number</th>
                                 <th>Departments</th>
                                 <th>Actions</th>
                                 <th>Delete</th>
@@ -42,7 +42,7 @@
                                     <td>{{$patient->first_name}} {{$patient->last_name}}</td>
                                     <td>{{$patient->national_id}}</td>
                                     <td>{{$patient->email}}</td>
-                                    <td>{{$patient->mobile}}</td>
+                                    <td>{{$patient->phone_number}}</td>
                                     <td>
                                         @foreach($patient->departments as $de)
                                             <span class="kt-badge kt-badge--brand kt-badge--inline kt-badge--pill">{{$de->name}}</span>

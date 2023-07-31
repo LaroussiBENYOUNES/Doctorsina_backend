@@ -39,7 +39,9 @@ Route::get('/', function () {
 Route::group(['namespace' => 'App\Http\Controllers'], function()
 {
     //localization Route
+    
     Route::get("locale/{locale}",[LocalizationController::class,'setLang']);
+
     // start frontend page routing
 
     Route::get('/', 'PagesController@index')->name('pages.index');
@@ -53,13 +55,12 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
     
     // end frontend page routing
 
-
-Route::get('login', [CustomAuthController::class, 'index'])->name('login');
-Route::post('custom-login', [CustomAuthController::class, 'customLogin'])->name('login.custom');
-Route::get('registre', [CustomAuthController::class, 'registration'])->name('register-user');
-Route::post('custom-registration', [CustomAuthController::class, 'customRegistration'])->name('register.custom');
-Route::get('signout', [CustomAuthController::class, 'signOut'])->name('signout');
-Route::get('/TumerDetection', 'TumerDetectionController@index')->name('pages.tumer_detection')->middleware('auth');
+    Route::get('login', [CustomAuthController::class, 'index'])->name('login');
+    Route::post('custom-login', [CustomAuthController::class, 'customLogin'])->name('login.custom');
+    Route::get('registre', [CustomAuthController::class, 'registration'])->name('register-user');
+    Route::post('custom-registration', [CustomAuthController::class, 'customRegistration'])->name('register.custom');
+    Route::get('signout', [CustomAuthController::class, 'signOut'])->name('signout');
+    Route::get('/TumerDetection', 'TumerDetectionController@index')->name('pages.tumer_detection')->middleware('auth');
 
 Route::middleware("auth")->group(function () {
     Route::get('dashboard', [CustomAuthController::class, 'dashboard'])->name('dashboard');
@@ -120,6 +121,7 @@ Route::middleware("doctor")->group(function () {
     Route::get('/secretaries',[SecretaryController::class,'index'])->name('secreatries.index');
     Route::post('/secretaries',[SecretaryController::class,'store'])->name('secreatries.store');
     Route::get('secretary/{id}', [SecretaryController::class, 'destroy'])->name('secretary.destroy');
+    Route::put('secretary/{id}', [SecretaryController::class, 'update'])->name('secretary.edit');
 
 });
 

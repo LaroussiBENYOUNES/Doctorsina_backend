@@ -46,7 +46,28 @@ class SecretaryController extends Controller
         // redirect user
         return redirect(route('secreatries.index'))->with('message', 'Secretary added successfully.');
     }
-    
+
+    //update secretary 
+    public function update(Request $request, $id)
+    {
+        $secretary = User::findorfail($id);
+
+        $data = $request->only('first_name', 'last_name', 'national_id', 'email', 'address', 'birth_date', 'gender', 'phone_number', 'mobile', 'emergency', 'blood_group');
+
+        if ($request->hasFile('picture')) {
+            $imageName = 'DOCTORSINA_'.Hash('sha1', random_int(100000, 999999)).'.'.$request->picture->extension();  
+            $pic =$request->picture->move(public_path('uploads/patients_pictures/'), $imageName);
+            Storage::delete($secretary->picture);
+            $data['picture'] =  $imageName ;
+        }
+
+
+        $secretary->update($data);
+        
+        return redirect(route('secreatries.index'))->with('message', 'secretary updated successfully.');;
+      
+    }
+
     public function destroy($id){
         $secretary = User::findorfail($id);
         Storage::delete($secretary->picture);

@@ -91,15 +91,13 @@ class PatientController extends Controller
         return view('doctor.patients.page.create')->with('patient', $patient)->with('departments',Department::all());
     }
 
-    public function update(Request $request, User $patient)
+    public function update(Request $request, $id)
     {
-        $data = $request->only('first_name', 'last_name', 'national_id', 'email', 'address', 'birth_date', 'gender', 'phone', 'mobile', 'emergency', 'blood_group');
+        $patient = User::findorfail($id);
+        $data = $request->only('first_name', 'last_name', 'national_id', 'email', 'address', 'birth_date', 'gender', 'phone_number', 'mobile', 'emergency', 'blood_group');
 
         if ($request->hasFile('picture')) {
-
             $imageName = 'DOCTORSINA_'.Hash('sha1', random_int(100000, 999999)).'.'.$request->picture->extension();  
-   
-
             $pic =$request->picture->move(public_path('uploads/patients_pictures/'), $imageName);
             Storage::delete($patient->picture);
             $data['picture'] =  $imageName ;
@@ -110,9 +108,8 @@ class PatientController extends Controller
         }
 
         $patient->update($data);
-      
-       
-            return redirect(route('patients.index'))->with('message', 'Patient added successfully.');;
+        
+        return redirect(route('patients.index'))->with('message', 'Patient updated successfully.');;
       
     }
     public function destroy($id)

@@ -23,7 +23,7 @@
                                 <th>Name</th>
                                 <th>National ID</th>
                                 <th>Email</th>
-                                <th>Mobile Num</th>
+                                <th>Phone number</th>
                                 <th>Actions</th>
                                 <th>Delete</th>
                 </tr>
@@ -41,13 +41,13 @@
                                     <td>{{$secretary->first_name}} {{$secretary->last_name}}</td>
                                     <td>{{$secretary->national_id}}</td>
                                     <td>{{$secretary->email}}</td>
-                                    <td>{{$secretary->mobile}}</td>
+                                    <td>{{$secretary->phone_number}}</td>
                                   
                                      <td>
                         <a value="{{ $secretary->id }}" data-bs-toggle="modal" data-bs-target="#ModalEdit{{ $secretary->id }}"
                             class="btn btn-success">Edit</a>
                     </td>
-                    {{-- @include('doctor.pages.patients.modal.edit', ['secretary' => $secretary]) --}}
+                    @include('doctor.pages.secretaries.modal.edit', ['secretary' => $secretary]) 
                     <td>
                         <a href="" class="btn btn-danger" data-bs-toggle="modal"
                             data-bs-target="#ModalDelete{{ $secretary->id }}">Delete</a>
