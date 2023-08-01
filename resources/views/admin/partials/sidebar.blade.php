@@ -58,6 +58,13 @@
                 <div data-i18n="Analytics">Contacts</div>
             </a>
         </li>
+           <!-----------Contact------------>
+        <li class="menu-item">
+            <a href="/doctor" class="menu-link">
+                <i class="menu-icon tf-icons fa fa-envelope"></i>
+                <div data-i18n="Analytics">Doctor</div>
+            </a>
+        </li>
         <!-----------Contact------------>
     </ul>
 </aside>

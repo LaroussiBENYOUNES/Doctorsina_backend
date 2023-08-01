@@ -68,3 +68,4 @@
 @include('doctor.pages.patients.modal.create')
 
 @endsection
+  

@@ -18,6 +18,7 @@ use App\Http\Controllers\WeightController;
 use App\Http\Controllers\GlucoseController;
 use App\Http\Controllers\BloodPressureController;
 use App\Http\Controllers\SecretaryController;
+use App\Http\Controllers\DoctorController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -79,7 +80,7 @@ Route::middleware("auth")->group(function () {
    
 
 
-});
+}); 
 
 Route::middleware("admin")->group( function(){
     Route::get('/team','TeamController@index')->name('team.index');
@@ -88,6 +89,12 @@ Route::middleware("admin")->group( function(){
     Route::get('/partner','PartnerController@index')->name('partner.index');
     Route::post('partner', [PartnerController::class, 'store'])->name('partner.store');
     Route::get('team/{id}',[TeamController::class, 'destroy' ])->name('team.destroy');
+    Route::get('/doctor','DoctorController@index')->name('doctor.index');
+    Route::put('/doctorEdit/{id}', 'DoctorController@update')->name('doctor.edit');
+
+    Route::post('doctor', [DoctorController::class, 'store'])->name('doctor.store');
+  
+    Route::get('doctor/{id}',[DoctorController::class, 'destroy' ])->name('doctor.destroy');
     Route::get('partner/{id}',[PartnerController::class, 'destroy' ])->name('partner.destroy');
     Route::get('contact/{id}',[ContactController::class, 'destroy' ])->name('contact.destroy');
     Route::get('contacts',[ContactController::class,'index'])->name('contacts.index');
